@@ -1,5 +1,8 @@
 # https://docs.manim.community/en/stable/reference/manim.animation.fading.FadeOut.html
+
+# manim index: https://docs.manim.community/en/stable/genindex.html
 from manim import *
+import csv
 
 class GridToNetwork(Scene): # add name of class (GridToNetwork)
     def construct(self): # needed for every animation
@@ -22,11 +25,10 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
         paraText = """
         To study the dynamics in the fire model simulations are needed.
         However, running the previous code hundreds of times would take
-        ages. A more efficient code is needed. In this video, I will 
-        just present the idea.
+        ages. A more efficient code is needed.
         """
 
-        text1 = Paragraph(paraText, alignment="left", line_spacing=0.5).scale(0.75) # add text
+        text1 = Paragraph(paraText, alignment="left", line_spacing=0.5).scale(0.5) # add text
         text1.move_to([0, 0, 0])
         self.play( Write( text1 ), run_time=6 ) 
 
@@ -53,21 +55,6 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
         
         # populate matrix
         self.play( Write( mat ) )
-
-        # populate matrix row by row
-        # self.add(mat.get_brackets()) # add brackets before populating
-        # rows = mat.get_rows()
-        # self.play(Write(rows[0]))
-        # self.play(Write(rows[1]))
-        # self.play(Write(rows[2]))
-        # self.play(Write(rows[3]))
-
-        # color connected entries
-        #entries = mat.get_entries()
-        #colors = [RED, WHITE, WHITE, WHITE, RED, RED, RED, WHITE, WHITE, WHITE, RED, WHITE, RED, RED, WHITE, WHITE]
-        #for k in range(len(colors)):
-        #    entries[k].set_color(colors[k])
-        #self.play( Write( mat ) )
 
         self.play( FadeOut( gr_text ) )
 
@@ -104,7 +91,7 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
         self.play( Write( text3 ), run_time=0.75 ) 
 
         #mat.to_edge( LEFT )
-        self.play(mat.animate.to_edge(LEFT))
+        self.play(mat.animate.to_edge(LEFT), run_time = 0.25)
         self.wait()
 
         arrow = Arrow(LEFT, RIGHT)
@@ -163,6 +150,7 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
         pos2 = node3.get_left()
         line23 = Line(pos1, pos2, color = col_burn)
 
+        rT = 0.15
         gr_line = VGroup( line12, line67, line23 )
         self.play(Write(gr_line), run_time = rT)
 
@@ -194,130 +182,115 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
         text1.move_to([0, 3, 0])
         text2 = Text( "Graph theory offers efficient algorithms to calculate them.").scale(0.35)
         text2.move_to([0, 2.5, 0])
-        self.play( Write( text1 ), run_time=2 )
-        self.play( Write( text2 ), run_time=2 )
+        self.play(Write(text1), run_time=2)
+        self.play(Write(text2), run_time=2)
 
-        text3 = Text( "Finding the graph representation of a binary matrix is the tricky part we will look at.").scale(0.35)
-        text3.move_to([0, -2.5, 0])
-        self.play( Write( text3 ), run_time=2 )
+        #text3 = Text( "Finding the graph representation of a binary matrix is the tricky part.").scale(0.35)
+        #text3.move_to([0, -2.5, 0])
+        #self.play( Write( text3 ), run_time=2 )
 
         self.wait()
 
         # Fade out all objects in the scene
         self.play(
-            *[FadeOut(mob)for mob in self.mobjects]
-            # All mobjects in the screen are saved in self.mobjects
+            *[FadeOut(mob)for mob in self.mobjects] # All mobjects in the screen are saved in self.mobjects
         )
 
-        self.wait()
+        text1 = Text( "Let's run the simulations and see what happens" ).scale(0.5)
+        text1.move_to([0, 3, 0])
+        text2 = Text( "The goal is to study the behavior of the fire model by varying the tree denstiy parameter.").scale(0.35)
+        text2.move_to([0, 2.5, 0])
+        self.play(Write(text1), run_time=2)
+        self.play(Write(text2), run_time=2)
 
-import numpy as np
-
-class RandomMatrix2(Scene):
-    def construct(self):
-        # Set matrix dimensions
-        rows, cols = 50, 50
-        # Generate random binary matrix
-        matrix = np.random.choice([0, 1], size=(rows, cols), p=[0.9, 0.1])
-        mat = Matrix( matrix, v_buff = 0.2, h_buff = 0.2)
-        self.add(mat)
-        self.wait()
-
-class RandomMatrix(Scene):
-    def construct(self):
-        # Set matrix dimensions
-        rows, cols = 50, 50
-        
-        square_size = 0.1
-        gap_size = 0
-        # Generate random binary matrix
-        matrix = np.random.choice([0, 1], size=(rows, cols), p=[0.9, 0.1])
-        
+        blist = BulletedList("Randomly populate a matrix for a given tree density.",
+                             "Find the network representation of the binary matrix.",
+                             "Find the size of the components bordering the fire line and calculate the area burned.",
+                             "Loop over steps one to three 100 times.",
+                             "Repeat for each tree density from 1 to 100.", height=4, width=8)
+        self.play(AddTextWordByWord(blist), run_time = 6 )
+        self.wait(3)
 
 
-        # Create squares to represent matrix elements
-        squares = VGroup()
-        for i in range(rows):
-            for j in range(cols):
-                square = Square(side_length=square_size)
-                square.move_to([i-(rows-1)/2 * (square_size + gap_size), j-(cols-1)/2 * (square_size + gap_size), 0])
-                if matrix[i][j] == 1:
-                    square.set_fill(RED, opacity=1)
-                else:
-                    square.set_fill(WHITE, opacity=1)
-                squares.add(square)
-        
-        # Add squares to the scene
-        self.add(squares)
-        self.wait()
+        gr_text = VGroup( text1, text2, blist)
+        self.play( FadeOut( gr_text ) )
 
-import numpy as np
-
-class VaryingProbMatrix(Scene):
-    def construct(self):
-        # Set matrix dimensions
-        rows, cols = 50, 50
-        
-        # Define the range of probabilities
-        min_prob, max_prob = 0.01, 1
-        num_steps = 100
-        
-        # Compute the step size
-        step_size = (max_prob - min_prob) / num_steps
-        
-        # Iterate over the range of probabilities
-        for i in range(num_steps + 1):
-            # Compute the current probability
-            current_prob = min_prob + i * step_size
-            
-            # Generate random binary matrix
-            matrix = np.random.choice([0, 1], size=(rows, cols), p=[1-current_prob, current_prob])
-            
-            # Create squares to represent matrix elements
-            squares = VGroup()
-            for i in range(rows):
-                for j in range(cols):
-                    square = Square(side_length=0.1)
-                    square.move_to([i-rows/2 + 0.1/2, j-cols/2 + 0.1/2, 0])
-                    if matrix[i][j] == 1:
-                        square.set_fill(RED, opacity=1)
-                    else:
-                        square.set_fill(WHITE, opacity=1)
-                    squares.add(square)
-            
-            # Add squares to the scene and wait for a short duration
-            self.add(squares)
-            self.wait(0.1)
-            
-            # Remove squares from the scene
-            self.remove(squares)
-
-import pandas as pd
-
-class ScatterPlot(Scene):
-    def construct(self):
-        # Load data from CSV file
-        data = pd.read_csv("data.csv")
-        
-        # Create scatter plot points
-        points = VGroup()
-        for _, row in data.iterrows():
-            point = Dot().move_to([row['variable'], row['mean'], 0])
-            points.add(point)
-        
-        # Create axes
         axes = Axes(
-            x_range=[0, 105, 10],
-            y_range=[0, 105, 10],
+            x_range=(0, 109, 10),
+            y_range=(0, 109 , 10),
             x_length=8,
-            y_length=6
+            y_length=6,
+            axis_config={
+                "include_tip": True,
+                "include_ticks": True,
+            }
         )
-        
-        # Add scatter plot points to the scene
-        self.add(axes, points)
-        
-        # Animate the scatter plot points
-        self.play(AnimationGroup(*[FadeIn(p) for p in points]))
-        self.wait()
+
+        # Load data from CSV file
+        points_data = []
+
+        with open('data_all.csv', 'r') as file:
+            reader = csv.reader(file)
+            for row in reader:
+                x, y = map(float, row)
+                points_data.append((x, y))
+
+        points = VGroup(*[Dot(axes.c2p(x, y), color=RED).scale(0.2) for x, y in points_data])
+
+        labels = axes.get_axis_labels(
+            Text("Tree Density [%]").scale(0.4), Text("Total Area Burned [%]").scale(0.4)
+        )
+
+        self.play(Write(axes))
+        self.play(Write(labels))
+        self.play(Write(points), run_time = 2) 
+        text = Text("Phase transition at around 60% tree density.").scale(0.35)
+        text.move_to([3, 0, 0])
+        self.play( Write( text ), run_time=2 )
+        self.wait(2.5)
+
+class Test(Scene):
+    def construct(self):
+
+        axes = Axes(
+            x_range=(0, 109, 10),
+            y_range=(0, 111, 10),
+            x_length=8,
+            y_length=6,
+            axis_config={
+                "include_tip": True,
+                "include_ticks": True,
+            }
+        )
+
+        points_data = [
+            (1, 2),
+            (20, 10),
+            (40, 15),
+            (60, 80),
+            (100, 100)
+        ]
+
+        # Load data from CSV file
+        #points_data = []
+
+        #with open('data_all.csv', 'r') as file:
+        #    reader = csv.reader(file)
+        #    for row in reader:
+        #        x, y = map(float, row)
+        #        points_data.append((x, y))
+
+        points = VGroup(*[Dot(axes.c2p(x, y), color=RED).scale(0.2) for x, y in points_data])
+
+        labels = axes.get_axis_labels(
+            Text("Tree Density [%]").scale(0.4), Text("Total Area Burned [%]").scale(0.4)
+        )
 
 
+        self.play(Write(axes))
+        self.play(Write(labels))
+        self.play(Write(points)) 
+        text = Text("Phase transition at around 60% tree density.").scale(0.35)
+        text.move_to([3, 0, 0])
+        self.play( Write( text ), run_time=2 )
+        self.wait(2.5)
