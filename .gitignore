@@ -9,6 +9,10 @@
 # files for website
 Fire Model Data/
 
+# animation folder (too many files created by manim)
+animation/__pycache__
+animation/media
+
 # website
 Fire Model.Rmd
 Fire-Model.html

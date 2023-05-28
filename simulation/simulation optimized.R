@@ -97,6 +97,8 @@ area_burned <- function( mat ) {
   
   dt[ , variable:=as.numeric( variable ) ]
   
+  write.csv( dt, file = "data.csv" )
+  
   # calculate mean and standard deviation
   dt <- dt[ , .("mean" = mean(value,na.rm=T), "sd" =sd(value,na.rm=T)), by=variable]
   
