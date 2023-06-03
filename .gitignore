@@ -23,3 +23,8 @@ Fire-Model-II.html
 
 
 .Rproj.user
+
+
+# do not share music due to licensing
+animation/piano.mp3
+animation/piano_adj.mp3

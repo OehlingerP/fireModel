@@ -6,6 +6,8 @@ import csv
 
 class GridToNetwork(Scene): # add name of class (GridToNetwork)
     def construct(self): # needed for every animation
+        # Music by Daddy_s_Music from Pixabay
+        self.add_sound("piano_adj.mp3")
         text = Text("The Fire Model").scale(1.5) # add texttext1.move_to([0, 3, 0])
         text.move_to([0, 1.5, 0])
         self.play( Write( text ), run_time=1 ) # self.play to animate and Write to have typesetting; run_time is self explaining
@@ -251,7 +253,7 @@ class GridToNetwork(Scene): # add name of class (GridToNetwork)
 
 class Test(Scene):
     def construct(self):
-
+        self.add_sound("piano.mp3")
         axes = Axes(
             x_range=(0, 109, 10),
             y_range=(0, 111, 10),

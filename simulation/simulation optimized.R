@@ -46,8 +46,15 @@ area_burned <- function( mat ) {
 
 #' simulate the spread of wildfires
 
-  # install igraph if not yet installed
-  if( system.file(package = "igraph" ) == "" ) install.packages( "igraph" )
+  # install and load packages
+  packages_to_load <- c( "ggplot2", "data.table", "igraph" )
+  
+  for( PACK in packages_to_load ){
+    
+    if( system.file( package = PACK ) == "" ) install.packages( PACK )
+    library( PACK, character.only = T )
+    
+  }
 
   set.seed( 20230526 )
 
@@ -59,15 +66,16 @@ area_burned <- function( mat ) {
   # define matrix/forest size
   matrix_size <- 50
   
-  for( density in 1:99 ){
+  for( density in 1:99 ){ # loop through each density
     
     print( density )
     
     # save time for each step
     start_density <- Sys.time()
     
-    for( i in 1:100 ){
+    for( i in 1:100 ){ # run simulation 100 times for each density
       
+      # populate grid with trees
       mat <- matrix( sample( c( 0, 1 ),
                              replace = TRUE,
                              size = matrix_size^2,
@@ -75,43 +83,38 @@ area_burned <- function( mat ) {
                                        density/100 ) ),
                      ncol = matrix_size )
     
+      # run area_burned() see function above and store result
       df_store[ i, density ] <- area_burned( mat )
         
     }
     
+    # store time it took to run simulation for one specific density
     time[ density ] <- difftime( Sys.time(), start_density, units = "mins" )
     
     
   }
   
-  getwd()
-  
-  save( df_store, time, file = "simulation_and_time.Rda" )
-
-  # reformat data for plotting (I'll use ggplot2)
-  colnames( df_store ) <- 1:99
-  
-  library( data.table )
-  
-  dt <- data.table::melt( as.data.table( df_store ) )
-  
-  dt[ , variable:=as.numeric( variable ) ]
-  
-  write.csv( na.omit( dt ), file = "data.csv" )
-  
-  # calculate mean and standard deviation
-  dt <- dt[ , .("mean" = mean(value,na.rm=T), "sd" =sd(value,na.rm=T)), by=variable]
-  
-  library( ggplot2 )
-  
-  plot <- ggplot( dt, aes( x = variable ) ) +
-    geom_ribbon( aes( ymin = mean-sd, ymax = mean+sd ), alpha = 0.2 ) +
-    geom_line( aes( y = mean ) )
-  
-  Rphd::gx_theme( plot )
-  
   plot( time*60)
-
+  
   plot( colMeans( df_store ) )
+  
+  # # store results
+  # save( df_store, time, file = "simulation_and_time.Rda" )
+  # 
+  # # reformat data for plotting (I'll use ggplot2)
+  # colnames( df_store ) <- 1:99
+  # dt <- data.table::melt( as.data.table( df_store ) )
+  # dt[ , variable:=as.numeric( variable ) ]
+  # write.csv( na.omit( dt ), file = "data.csv" )
+  # 
+  # # calculate mean and standard deviation
+  # dt <- dt[ , .("mean" = mean(value,na.rm=T), "sd" =sd(value,na.rm=T)), by=variable]
+  # 
+  # # plot results
+  # plot <- ggplot( dt, aes( x = variable ) ) +
+  #   geom_ribbon( aes( ymin = mean-sd, ymax = mean+sd ), alpha = 0.2 ) +
+  #   geom_line( aes( y = mean ) )
+  
+  
 
     
