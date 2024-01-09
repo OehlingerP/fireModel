@@ -1,2 +1,2 @@
-# fire_model
+# fireModel
 Simulating the spread of wildfires
